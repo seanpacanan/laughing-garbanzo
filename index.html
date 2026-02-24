@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camera Equipment Inventory</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <section id="login-view" class="centered-view">
+      <div class="card login-card">
+        <h1>Camera Room Inventory</h1>
+        <p class="subtitle">Sign in to manage borrowing and returns</p>
+        <form id="login-form" class="stack">
+          <label>
+            Username
+            <input type="text" id="username" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="password" required />
+          </label>
+          <button type="submit" class="btn primary">Login</button>
+          <p class="hint">Demo users: <strong>admin/admin123</strong> and <strong>staff/staff123</strong>.</p>
+          <p id="login-error" class="error-message"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="dashboard-view" class="hidden">
+      <aside class="sidebar">
+        <h2>Camera IMS</h2>
+        <p id="user-info" class="user-info"></p>
+        <nav>
+          <button class="nav-btn active" data-target="dashboard">Dashboard</button>
+          <button class="nav-btn" data-target="cameras">Cameras</button>
+          <button class="nav-btn" data-target="transactions">Transactions</button>
+          <button class="nav-btn" data-target="history">Borrower History</button>
+          <button class="nav-btn" data-target="reports">Reports</button>
+        </nav>
+        <button id="logout-btn" class="btn">Logout</button>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <h1 id="section-title">Dashboard</h1>
+          <span id="overdue-banner" class="badge danger hidden"></span>
+        </header>
+
+        <section id="dashboard" class="panel-section">
+          <div class="cards-grid">
+            <article class="stat-card">
+              <h3>Total Available Cameras</h3>
+              <p id="stat-available">0</p>
+            </article>
+            <article class="stat-card">
+              <h3>Currently Borrowed</h3>
+              <p id="stat-borrowed">0</p>
+            </article>
+            <article class="stat-card alert">
+              <h3>Overdue Items</h3>
+              <p id="stat-overdue">0</p>
+            </article>
+          </div>
+          <div class="card">
+            <h3>Recent Activity</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>Camera</th>
+                  <th>Borrowed At</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-activity"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="cameras" class="panel-section hidden">
+          <div class="card">
+            <div class="section-header">
+              <h3>Camera Units</h3>
+              <span id="admin-only-note" class="badge warning hidden">Admin only section</span>
+            </div>
+            <form id="camera-form" class="grid-form">
+              <input type="hidden" id="camera-edit-id" />
+              <label>Camera Unit Name<input type="text" id="camera-name" required /></label>
+              <label>Unique ID / Barcode<input type="text" id="camera-barcode" required /></label>
+              <label>Status
+                <select id="camera-status" required>
+                  <option value="Available">Available</option>
+                  <option value="Under Maintenance">Under Maintenance</option>
+                </select>
+              </label>
+              <div class="actions-row">
+                <button type="submit" class="btn primary" id="camera-submit">Add Camera</button>
+                <button type="button" class="btn" id="camera-cancel">Cancel</button>
+              </div>
+            </form>
+            <table>
+              <thead>
+                <tr>
+                  <th>Unit</th>
+                  <th>Barcode</th>
+                  <th>Status</th>
+                  <th>Archived</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="camera-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="transactions" class="panel-section hidden">
+          <div class="two-column">
+            <div class="card">
+              <h3>Borrow Camera</h3>
+              <form id="borrow-form" class="grid-form">
+                <label>Borrower Full Name<input type="text" id="borrower-name" required /></label>
+                <label>Student / Employee ID<input type="text" id="borrower-id" required /></label>
+                <label>Department / Section<input type="text" id="borrower-dept" required /></label>
+                <label>Camera Unit
+                  <select id="borrow-camera" required></select>
+                </label>
+                <label>Expected Return Date & Time<input type="datetime-local" id="expected-return" required /></label>
+                <label>Approved By<input type="text" id="approved-by" required /></label>
+                <button type="submit" class="btn primary">Borrow</button>
+              </form>
+            </div>
+            <div class="card">
+              <h3>Return Camera</h3>
+              <form id="return-form" class="stack">
+                <label>Active Borrowing
+                  <select id="return-transaction" required></select>
+                </label>
+                <button type="submit" class="btn success">Mark as Returned</button>
+              </form>
+              <p class="hint">Actual return time is auto-recorded.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>All Transactions</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>ID</th>
+                  <th>Dept</th>
+                  <th>Camera</th>
+                  <th>Borrowed At</th>
+                  <th>Expected Return</th>
+                  <th>Returned At</th>
+                  <th>Approved By</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="transaction-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="history" class="panel-section hidden">
+          <div class="card">
+            <h3>Borrowing History Per User</h3>
+            <form id="history-form" class="inline-form">
+              <input type="text" id="history-id" placeholder="Enter Student/Employee ID" required />
+              <button type="submit" class="btn">View History</button>
+            </form>
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>Camera</th>
+                  <th>Borrowed At</th>
+                  <th>Returned At</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="history-table"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="reports" class="panel-section hidden">
+          <div class="card">
+            <h3>Download Reports</h3>
+            <p>Export the transaction log for audit and reporting.</p>
+            <div class="actions-row">
+              <button id="download-excel" class="btn primary">Download Excel (CSV)</button>
+              <button id="download-pdf" class="btn">Download PDF</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
