@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camera Equipment Inventory System</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <main id="app">
+    <section id="loginView" class="card auth-card">
+      <h1>Camera Equipment Room</h1>
+      <p>Inventory Management System</p>
+      <form id="loginForm" class="stack">
+        <label>
+          Username
+          <input required type="text" id="username" placeholder="admin or staff" />
+        </label>
+        <label>
+          Password
+          <input required type="password" id="password" placeholder="••••••" />
+        </label>
+        <button type="submit">Login</button>
+      </form>
+      <small>Demo credentials: admin/admin123 or staff/staff123</small>
+      <p id="loginError" class="error"></p>
+    </section>
+
+    <section id="dashboardView" class="hidden">
+      <aside class="sidebar">
+        <h2>IMS</h2>
+        <p id="sessionInfo"></p>
+        <nav>
+          <button data-section="dashboard" class="nav-btn active">Dashboard</button>
+          <button data-section="cameras" class="nav-btn">Camera Units</button>
+          <button data-section="transactions" class="nav-btn">Borrow & Return</button>
+          <button data-section="history" class="nav-btn">Borrowing History</button>
+          <button data-section="reports" class="nav-btn">Reports</button>
+        </nav>
+        <button id="logoutBtn" class="danger">Logout</button>
+      </aside>
+
+      <div class="content">
+        <header>
+          <h1>Camera Inventory Dashboard</h1>
+          <p id="overdueNotice"></p>
+        </header>
+
+        <section id="dashboard" class="panel section-view">
+          <div class="stats-grid">
+            <article class="stat-card">
+              <h3>Total Cameras</h3>
+              <p id="totalCameras">0</p>
+            </article>
+            <article class="stat-card success">
+              <h3>Available</h3>
+              <p id="availableCameras">0</p>
+            </article>
+            <article class="stat-card warning">
+              <h3>Borrowed</h3>
+              <p id="borrowedCameras">0</p>
+            </article>
+            <article class="stat-card danger">
+              <h3>Overdue</h3>
+              <p id="overdueCameras">0</p>
+            </article>
+          </div>
+          <div class="panel">
+            <h3>Overdue Alerts</h3>
+            <ul id="overdueList"></ul>
+          </div>
+        </section>
+
+        <section id="cameras" class="panel section-view hidden">
+          <h3>Camera Units</h3>
+          <form id="cameraForm" class="grid-form">
+            <input type="hidden" id="cameraId" />
+            <label>Name<input required id="cameraName" placeholder="Canon EOS R6" /></label>
+            <label>Barcode<input required id="cameraBarcode" placeholder="CAM-0001" /></label>
+            <label>Serial No.<input required id="cameraSerial" placeholder="SN123456" /></label>
+            <label>Status
+              <select id="cameraStatus">
+                <option>Available</option>
+                <option>Under Maintenance</option>
+              </select>
+            </label>
+            <div class="form-actions">
+              <button type="submit">Save Camera</button>
+              <button type="button" id="cameraReset" class="secondary">Clear</button>
+            </div>
+          </form>
+          <table>
+            <thead>
+              <tr><th>Camera</th><th>Barcode</th><th>Serial</th><th>Status</th><th>Archived</th><th>Action</th></tr>
+            </thead>
+            <tbody id="cameraTable"></tbody>
+          </table>
+        </section>
+
+        <section id="transactions" class="panel section-view hidden">
+          <h3>Borrow Camera</h3>
+          <form id="borrowForm" class="grid-form">
+            <label>Borrower Full Name<input required id="borrowerName" /></label>
+            <label>ID Number<input required id="borrowerId" /></label>
+            <label>Department / Section<input required id="borrowerDept" /></label>
+            <label>Camera Unit
+              <select required id="borrowCamera"></select>
+            </label>
+            <label>Expected Return Date & Time<input required type="datetime-local" id="expectedReturn" /></label>
+            <label>Approved By<input required id="approvedBy" placeholder="Approver name" /></label>
+            <div class="form-actions"><button type="submit">Record Borrowing</button></div>
+          </form>
+
+          <h3>Active Borrowings</h3>
+          <table>
+            <thead>
+              <tr><th>Borrower</th><th>ID</th><th>Department</th><th>Camera</th><th>Borrowed At</th><th>Expected Return</th><th>Approved By</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody id="activeBorrowTable"></tbody>
+          </table>
+        </section>
+
+        <section id="history" class="panel section-view hidden">
+          <h3>Borrowing History</h3>
+          <label>Filter by Borrower ID<input id="historyFilter" placeholder="Type borrower ID" /></label>
+          <table>
+            <thead>
+              <tr><th>Borrower</th><th>ID</th><th>Department</th><th>Camera</th><th>Borrowed</th><th>Expected Return</th><th>Actual Return</th><th>Approved By</th><th>Status</th></tr>
+            </thead>
+            <tbody id="historyTable"></tbody>
+          </table>
+        </section>
+
+        <section id="reports" class="panel section-view hidden">
+          <h3>Download Reports</h3>
+          <p>Generate reports for all transactions in Excel or PDF.</p>
+          <div class="form-actions">
+            <button id="downloadExcel" type="button">Download Excel</button>
+            <button id="downloadPdf" type="button" class="secondary">Download PDF</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
